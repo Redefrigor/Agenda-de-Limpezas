@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Agenda de Limpezas</title>
+<style>
+:root{--azul:#0056A4;--verde:#00A428;--bg:#f6f8fb;--card:#ffffff;--text:#00325e}
+*{box-sizing:border-box}
+body{font-family:Inter, Arial, sans-serif;margin:16px;background:var(--bg);color:var(--text);}
+header{display:flex;gap:12px;align-items:center;margin-bottom:16px}
+.logo{height:52px}
+h1{margin:0;color:var(--azul);font-size:1.25rem}
+.controls{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,0.06)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab{padding:8px 12px;border-radius:8px;border:1px solid #e6eef8;background:transparent;color:var(--text);cursor:pointer;font-weight:600}
+.tab.active{background:var(--azul);color:#fff;border-color:var(--azul)}
+.filter-block{display:flex;flex-direction:column;gap:6px;font-size:.9rem}
+.filter-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.month-input{padding:6px;border-radius:6px;border:1px solid #d3dbe8}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;border:1px solid #d3dbe8;background:#f3f6fb;font-size:.8rem;cursor:pointer}
+.table-wrap{overflow:auto;margin-top:12px}
+table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+}
+th,td{
+  padding:9px 10px;
+  border-bottom:1px solid #eef4fb;
+  text-align:center;
+  font-size:.95rem;
+}
+/* larguras proporcionais das colunas */
+th:nth-child(1),td:nth-child(1){width:12%;}  /* Data */
+th:nth-child(2),td:nth-child(2){width:26%;}  /* Cliente / Loja */
+th:nth-child(3),td:nth-child(3){width:28%;}  /* Equipamento */
+th:nth-child(4),td:nth-child(4){width:10%;}  /* Status */
+th:nth-child(5),td:nth-child(5){width:14%;}  /* Obs */
+th:nth-child(6),td:nth-child(6){width:10%;}  /* Link do Relatório */
+th{background:var(--verde);color:#fff;position:sticky;top:0}
+.empty{padding:12px;color:#666;font-style:italic}
+.btn{padding:6px 10px;border-radius:8px;border:0;cursor:pointer}
+a{color:var(--azul);text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <img class="logo" src="logo-redefrigor.png" alt="REDEFRIGOR">
+  <div>
+    <h1>Agenda de Limpezas</h1>
+  </div>
+</header>
+
+<div class="card">
+  <div class="controls">
+    <div class="filter-block">
+      <span style="font-weight:600">Período</span>
+      <div class="filter-row">
+        <label for="monthSelect">Mês:</label>
+        <select id="monthSelect" class="month-input">
+          <option value="">Todos</option>
+          <option value="01">Janeiro</option>
+          <option value="02">Fevereiro</option>
+          <option value="03">Março</option>
+          <option value="04">Abril</option>
+          <option value="05">Maio</option>
+          <option value="06">Junho</option>
+          <option value="07">Julho</option>
+          <option value="08">Agosto</option>
+          <option value="09">Setembro</option>
+          <option value="10">Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
+        </select>
+        <select id="yearSelect" class="month-input">
+          <!-- anos serão preenchidos via JS -->
+        </select>
+        <button id="showAllBtn" class="btn">Mostrar todos</button>
+      </div>
+    </div>
+
+    <div class="filter-block">
+      <span style="font-weight:600">Tipo de limpeza</span>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" id="chkEvap" checked /> Evaporador</label>
+        <label class="chip"><input type="checkbox" id="chkCond" checked /> Condensador</label>
+        <label class="chip"><input type="checkbox" id="chkIlha" checked /> Ilha ICF</label>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:12px">
+    <div class="tabs" id="clientTabs"></div>
+  </div>
+
+  <div class="table-wrap card" style="margin-top:12px">
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Cliente / Loja</th>
+          <th>Equipamento</th>
+          <th>Status</th>
+          <th>Obs</th>
+          <th>Link do Relatório</th>
+        </tr>
+      </thead>
+      <tbody id="scheduleBody"></tbody>
+    </table>
+    <div id="emptyMsg" class="empty" style="display:none">Nenhuma agenda encontrada.</div>
+  </div>
+</div>
+
+<script>
+// Os dados serão carregados de um arquivo CSV externo: Agenda de Limpezas.csv
+let data = [];
+
+const monthSelect = document.getElementById('monthSelect');
+const yearSelect = document.getElementById('yearSelect');
+const clientTabs = document.getElementById('clientTabs');
+const scheduleBody = document.getElementById('scheduleBody');
+const emptyMsg = document.getElementById('emptyMsg');
+const showAllBtn = document.getElementById('showAllBtn');
+const chkEvap = document.getElementById('chkEvap');
+const chkCond = document.getElementById('chkCond');
+const chkIlha = document.getElementById('chkIlha');
+
+let state = { client:'Todos', month:'', showAll:false, types:{evap:true,cond:true,ilha:true} };
+
+(function initMonth(){
+  const hoje = new Date();
+  // Preenche anos de (ano atual -1) até (ano atual +1)
+  const anoAtual = hoje.getFullYear();
+  for(let a = anoAtual - 1; a <= anoAtual + 1; a++){
+    const opt = document.createElement('option');
+    opt.value = String(a);
+    opt.textContent = a;
+    yearSelect.appendChild(opt);
+  }
+  yearSelect.value = String(anoAtual);
+  const mesAtual = String(hoje.getMonth()+1).padStart(2,'0');
+  monthSelect.value = mesAtual;
+  state.month = anoAtual + '-' + mesAtual;
+})();
+
+function distinctClients(arr){
+  const s = new Set(arr.map(r=>r.client));
+  return ['Todos', ...Array.from(s)];
+}
+function formatDateBr(iso){
+  if(!iso) return '';
+  const parts = iso.split('-');
+  if(parts.length !== 3) return iso;
+  return parts[2] + '/' + parts[1] + '/' + parts[0];
+}
+
+function renderTabs(){
+  clientTabs.innerHTML='';
+  const clients=distinctClients(data);
+  clients.forEach(c=>{
+    const btn=document.createElement('button');
+    btn.className='tab'+(state.client===c?' active':'');
+    btn.textContent=c;
+    btn.onclick=()=>{ state.client=c; render(); };
+    clientTabs.appendChild(btn);
+  });
+}
+
+function matchesType(row){
+  const t=state.types;
+  const anySelected = t.evap || t.cond || t.ilha;
+  if(!anySelected) return true;
+  if(t.evap && row.tipo==='Evaporador') return true;
+  if(t.cond && row.tipo==='Condensador') return true;
+  if(t.ilha && row.tipo==='Ilha ICF') return true;
+  return false;
+}
+
+function matchesFilters(row){
+  if(state.client !== 'Todos' && row.client !== state.client) return false;
+  if(!state.showAll && state.month){
+    const rowMonth = row.date ? row.date.slice(0,7) : '';
+    if(rowMonth !== state.month) return false;
+  }
+  if(!matchesType(row)) return false;
+  return true;
+}
+
+function render(){
+  renderTabs();
+  scheduleBody.innerHTML='';
+  const filtered = data.filter(matchesFilters);
+  if(filtered.length===0){
+    emptyMsg.style.display='block';
+    return;
+  } else {
+    emptyMsg.style.display='none';
+  }
+  filtered.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML = ''
+      + '<td>' + (formatDateBr(r.date) || '') + '</td>'
+      + '<td>' + (r.client || '') + '</td>'
+      + '<td>' + (r.equipamento || '') + '</td>'
+      + '<td>' + (r.status || '') + '</td>'
+      + '<td>' + (r.notes || '') + '</td>'
+      + '<td>' + (r.relatorio ? '<a href="' + r.relatorio + '" target="_blank">Abrir</a>' : '—') + '</td>';
+    scheduleBody.appendChild(tr);
+  });
+}
+
+function updateMonthFromSelects(){
+  const ano = yearSelect.value;
+  const mes = monthSelect.value;
+  if(ano && mes){
+    state.month = ano + '-' + mes;
+    state.showAll = false;
+  }else{
+    // se mês em branco, considera sem filtro (equivalente a mostrar todos)
+    state.month = '';
+    state.showAll = true;
+  }
+  render();
+}
+monthSelect.addEventListener('change', updateMonthFromSelects);
+yearSelect.addEventListener('change', updateMonthFromSelects);
+showAllBtn.addEventListener('click', ()=>{ state.showAll=!state.showAll; render(); });
+chkEvap.addEventListener('change', ()=>{ state.types.evap = chkEvap.checked; render(); });
+chkCond.addEventListener('change', ()=>{ state.types.cond = chkCond.checked; render(); });
+chkIlha.addEventListener('change', ()=>{ state.types.ilha = chkIlha.checked; render(); });
+
+// ------ CARREGAMENTO DO CSV ------
+// Espera um arquivo 'Agenda de Limpezas.csv' na mesma pasta do index.html
+// Cabeçalhos obrigatórios: Cliente, Data da Limpeza, Equipamento, Status, Obs, Link do Relatório (opcional)
+function parseCsv(text){
+  const lines = text.trim().split(/\r?\n/);
+  if(!lines.length) return [];
+  const sep = (lines[0].includes(';') && !lines[0].includes(',')) ? ';' : ',';
+  const headers = lines[0].split(sep).map(h=>h.trim());
+  const idx = {
+    cliente: headers.indexOf('Cliente'),
+    data: headers.indexOf('Data da Limpeza'),
+    equip: headers.indexOf('Equipamento'),
+    status: headers.indexOf('Status'),
+    obs: headers.indexOf('Obs'),
+    link: headers.indexOf('Link do Relatório')
+  };
+  const out = [];
+  for(let i=1;i<lines.length;i++){
+    if(!lines[i].trim()) continue;
+    const cols = lines[i].split(sep);
+    const rawDate = idx.data>=0 ? (cols[idx.data]||'').trim() : '';
+    let isoDate = '';
+    if(rawDate){
+      if(rawDate.includes('-')){
+        isoDate = rawDate; // já está em ISO
+      }else if(rawDate.includes('/')){
+        const p = rawDate.split('/');
+        if(p.length===3){
+          const d=p[0].padStart(2,'0'), m=p[1].padStart(2,'0'), y=p[2];
+          isoDate = y + '-' + m + '-' + d;
+        }
+      }
+    }
+    const equipamento = idx.equip>=0 ? (cols[idx.equip]||'').trim() : '';
+    let tipo = 'Outro';
+    const low = equipamento.toLowerCase();
+    if(low.includes('evapor')) tipo='Evaporador';
+    else if(low.includes('condens')) tipo='Condensador';
+    else if(low.includes('ilha')) tipo='Ilha ICF';
+
+    out.push({
+      date: isoDate,
+      client: idx.cliente>=0 ? (cols[idx.cliente]||'').trim() : '',
+      unit: '',
+      tipo: tipo,
+      equipamento: equipamento,
+      status: idx.status>=0 ? (cols[idx.status]||'').trim() : '',
+      notes: idx.obs>=0 ? (cols[idx.obs]||'').trim() : '',
+      relatorio: idx.link>=0 ? (cols[idx.link]||'').trim() : ''
+    });
+  }
+  return out;
+}
+
+function carregarDados(){
+  // tenta primeiro 'Agenda de Limpezas.csv' e, se não achar, tenta 'dados.csv'
+  fetch('Agenda de Limpezas.csv')
+    .then(r=>{
+      if(!r.ok) throw new Error('Agenda de Limpezas.csv não encontrado');
+      return r.text();
+    })
+    .then(t=>{
+      data = parseCsv(t);
+      render();
+    })
+    .catch(errPrimeiro=>{
+      console.warn('Erro ao carregar "Agenda de Limpezas.csv". Tentando "dados.csv"...', errPrimeiro);
+      fetch('dados.csv')
+        .then(r2=>{
+          if(!r2.ok) throw new Error('dados.csv não encontrado');
+          return r2.text();
+        })
+        .then(t2=>{
+          data = parseCsv(t2);
+          render();
+        })
+        .catch(errSegundo=>{
+          console.error('Erro ao carregar arquivos CSV', errPrimeiro, errSegundo);
+          emptyMsg.style.display='block';
+          emptyMsg.textContent = "Não foi possível carregar os arquivos de dados (Agenda de Limpezas.csv ou dados.csv).";
+        });
+    });
+}
+
+carregarDados();});
+</script>
+
+</body>
+</html>
