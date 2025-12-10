@@ -10,7 +10,7 @@
       --verde:#00A428;
       --bg:#f6f8fb;
       --card:#ffffff;
-      --text:#00325e;
+      --text:#00325e;a
     }
     *{box-sizing:border-box}
     body{
@@ -114,7 +114,7 @@
     th:nth-child(3),td:nth-child(3){width:28%;}  /* Equipamento */
     th:nth-child(4),td:nth-child(4){width:10%;}  /* Status */
     th:nth-child(5),td:nth-child(5){width:14%;}  /* Obs */
-    th:nth-child(6),td:nth-child(6){width:10%;}  /* Link do Relatório */
+    th:nth-child(6),td:nth-child(6){width:10%;}  /* Link do RelatÃ³rio */
     th{
       background:var(--verde);
       color:#fff;
@@ -137,7 +137,46 @@
       text-decoration:none;
       font-weight:600;
     }
-  </style>
+  
+    @media (max-width: 768px){
+      body{
+        margin:8px;
+      }
+      header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:6px;
+      }
+      .logo{
+        height:40px;
+      }
+      h1{
+        font-size:1.1rem;
+      }
+      .controls{
+        flex-direction:column;
+      }
+      .filter-row{
+        flex-direction:row;
+        flex-wrap:wrap;
+      }
+      .month-input{
+        width:100%;
+        max-width:240px;
+      }
+      .chips{
+        flex-wrap:wrap;
+      }
+      .table-wrap{
+        margin-top:8px;
+      }
+      th,td{
+        font-size:.8rem;
+        padding:6px 4px;
+      }
+    }
+
+</style>
 </head>
 <body>
 <header>
@@ -150,9 +189,9 @@
 <div class="card">
   <div class="controls">
     <div class="filter-block">
-      <span style="font-weight:600">Período</span>
+      <span style="font-weight:600">PerÃ­odo</span>
       <div class="filter-row">
-        <label for="monthFilter">Mês:</label>
+        <label for="monthFilter">MÃªs:</label>
         <input id="monthFilter" class="month-input" type="month" />
         <button id="showAllBtn" class="btn">Mostrar todos</button>
       </div>
@@ -181,7 +220,7 @@
           <th>Equipamento</th>
           <th>Status</th>
           <th>Obs</th>
-          <th>Link do Relatório</th>
+          <th>Link do RelatÃ³rio</th>
         </tr>
       </thead>
       <tbody id="scheduleBody"></tbody>
@@ -195,7 +234,7 @@
 const data = [
   {
     "date": "2025-12-11",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Evaporador",
     "equipamento": "Evaporador - SP Frios",
@@ -205,7 +244,7 @@ const data = [
   },
   {
     "date": "2025-12-12",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Evaporador",
     "equipamento": "Evaporador - Walk in 01",
@@ -215,7 +254,7 @@ const data = [
   },
   {
     "date": "2025-12-13",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Evaporador",
     "equipamento": "Evaporador - Walk in 02",
@@ -225,7 +264,7 @@ const data = [
   },
   {
     "date": "2025-12-14",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Evaporador",
     "equipamento": "Evaporador - SP FLV",
@@ -235,7 +274,7 @@ const data = [
   },
   {
     "date": "2025-12-15",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Evaporador",
     "equipamento": "Evaporador - CFR Frutas",
@@ -245,7 +284,7 @@ const data = [
   },
   {
     "date": "2025-12-16",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Evaporador",
     "equipamento": "Evaporador - CFR Hortifruti",
@@ -255,7 +294,7 @@ const data = [
   },
   {
     "date": "2025-12-17",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Evaporador",
     "equipamento": "Evaporador - SP Frios",
@@ -265,7 +304,7 @@ const data = [
   },
   {
     "date": "2025-12-18",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Evaporador",
     "equipamento": "Evaporador - CFR Frios",
@@ -275,7 +314,7 @@ const data = [
   },
   {
     "date": "2025-12-19",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Evaporador",
     "equipamento": "Evaporador - CFR Padaria",
@@ -285,17 +324,17 @@ const data = [
   },
   {
     "date": "2025-12-20",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Evaporador",
-    "equipamento": "Evaporador - SP Açougue",
+    "equipamento": "Evaporador - SP AÃ§ougue",
     "status": "A fazer",
     "notes": "",
     "relatorio": ""
   },
   {
     "date": "2025-12-21",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Evaporador",
     "equipamento": "Evaporador - CFR Tendal",
@@ -305,87 +344,87 @@ const data = [
   },
   {
     "date": "2025-12-22",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
-    "equipamento": "Ilha ICF 01 - Açougue",
+    "equipamento": "Ilha ICF 01 - AÃ§ougue",
     "status": "A fazer",
     "notes": "",
     "relatorio": ""
   },
   {
     "date": "2025-12-23",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
-    "equipamento": "Ilha ICF 02 - Açougue",
+    "equipamento": "Ilha ICF 02 - AÃ§ougue",
     "status": "A fazer",
     "notes": "",
     "relatorio": ""
   },
   {
     "date": "2025-12-24",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
-    "equipamento": "Ilha ICF 03 - Açougue",
+    "equipamento": "Ilha ICF 03 - AÃ§ougue",
     "status": "A fazer",
     "notes": "",
     "relatorio": ""
   },
   {
     "date": "2025-12-25",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
-    "equipamento": "Ilha ICF 04 - Açougue",
+    "equipamento": "Ilha ICF 04 - AÃ§ougue",
     "status": "A fazer",
     "notes": "",
     "relatorio": ""
   },
   {
     "date": "2025-12-26",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
-    "equipamento": "Ilha ICF 05 - Açougue",
+    "equipamento": "Ilha ICF 05 - AÃ§ougue",
     "status": "A fazer",
     "notes": "",
     "relatorio": ""
   },
   {
     "date": "2025-12-27",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
-    "equipamento": "Ilha ICF 06 - Açougue",
+    "equipamento": "Ilha ICF 06 - AÃ§ougue",
     "status": "A fazer",
     "notes": "",
     "relatorio": ""
   },
   {
     "date": "2025-12-28",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
-    "equipamento": "Ilha ICF 07 - Açougue",
+    "equipamento": "Ilha ICF 07 - AÃ§ougue",
     "status": "A fazer",
     "notes": "",
     "relatorio": ""
   },
   {
     "date": "2025-12-29",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
-    "equipamento": "Ilha ICF 08 - Açougue",
+    "equipamento": "Ilha ICF 08 - AÃ§ougue",
     "status": "A fazer",
     "notes": "",
     "relatorio": ""
   },
   {
     "date": "2025-12-30",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
     "equipamento": "Ilha ICF 01 - Frios",
@@ -395,7 +434,7 @@ const data = [
   },
   {
     "date": "2025-12-31",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
     "equipamento": "Ilha ICF 02 - Frios",
@@ -405,7 +444,7 @@ const data = [
   },
   {
     "date": "2026-01-01",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
     "equipamento": "Ilha ICF 03 - Frios",
@@ -415,7 +454,7 @@ const data = [
   },
   {
     "date": "2026-01-02",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
     "equipamento": "Ilha ICF 04 - Frios",
@@ -425,7 +464,7 @@ const data = [
   },
   {
     "date": "2026-01-03",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
     "equipamento": "Ilha ICF 05 - Frios",
@@ -435,7 +474,7 @@ const data = [
   },
   {
     "date": "2026-01-04",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
     "equipamento": "Ilha ICF 06 - Frios",
@@ -445,7 +484,7 @@ const data = [
   },
   {
     "date": "2026-01-05",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
     "equipamento": "Ilha ICF 07 - Frios",
@@ -455,7 +494,7 @@ const data = [
   },
   {
     "date": "2026-01-06",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
     "equipamento": "Ilha ICF 08 - Frios",
@@ -465,7 +504,7 @@ const data = [
   },
   {
     "date": "2026-01-07",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
     "equipamento": "Ilha ICF 09 - Frios",
@@ -475,7 +514,7 @@ const data = [
   },
   {
     "date": "2026-01-08",
-    "client": "C-Vale Caarapó (contrato)",
+    "client": "C-Vale CaarapÃ³ (contrato)",
     "unit": "",
     "tipo": "Ilha ICF",
     "equipamento": "Ilha ICF 10 - Frios",
@@ -496,7 +535,7 @@ const chkIlha     = document.getElementById('chkIlha');
 
 let state = { client:'Todos', month:'', showAll:false, types:{evap:true,cond:true,ilha:true} };
 
-// inicializa mês atual
+// inicializa mÃªs atual
 (function initMonth(){
   const hoje = new Date();
   monthFilter.value = hoje.getFullYear() + '-' + String(hoje.getMonth()+1).padStart(2,'0');
@@ -564,7 +603,7 @@ function render(){
       '<td>' + (r.equipamento || '') + '</td>' +
       '<td>' + (r.status || '') + '</td>' +
       '<td>' + (r.notes || '') + '</td>' +
-      '<td>' + (r.relatorio ? '<a href="' + r.relatorio + '" target="_blank">Abrir</a>' : '—') + '</td>';
+      '<td>' + (r.relatorio ? '<a href="' + r.relatorio + '" target="_blank">Abrir</a>' : 'â€”') + '</td>';
     scheduleBody.appendChild(tr);
   });
 }
@@ -582,7 +621,7 @@ chkEvap.addEventListener('change', ()=>{ state.types.evap = chkEvap.checked; ren
 chkCond.addEventListener('change', ()=>{ state.types.cond = chkCond.checked; render(); });
 chkIlha.addEventListener('change', ()=>{ state.types.ilha = chkIlha.checked; render(); });
 
-// primeira renderização
+// primeira renderizaÃ§Ã£o
 render();
 </script>
 </body>
